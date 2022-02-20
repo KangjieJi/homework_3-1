@@ -15,6 +15,31 @@ app.layout = html.Div([
 
     # Section title
     html.H3("Section 1: Fetch & Display exchange rate historical data"),
+    html.H4("Select value for durationStr:"),
+    html.Div(
+        dcc.Input(
+            id='duration-str', value='30 D'
+        ),
+        style={'width': '365px'}
+    ),
+    html.H4("Select value for barSizeSetting:"),
+    html.Div(
+        dcc.Dropdown(
+            ["1 sec", "5 secs", "15 secs", "30 secs", "1 min", "2 min", "3 min", "5 min", "15 min", "30 min", "1 hour", "1 day"],
+            "1 min",
+            id='barSize-Setting'
+        ),
+        style={'width': '365px'}
+    ),
+    html.H4("Select value for RTH:"),
+    html.Div(
+        dcc.Dropdown(
+            ["0", "1"],
+            "0",
+            id='RTH'
+        ),
+        style={'width': '365px'}
+    ),
     html.H4("Select value for whatToShow:"),
     html.Div(
         dcc.Dropdown(
@@ -143,10 +168,11 @@ app.layout = html.Div([
     #   of 'currency-input' at the time the button was pressed DOES get passed in.
     [State('currency-input', 'value'), State('what-to-show', 'value'),
      State('edt-date', 'date'), State('edt-hour', 'value'),
-     State('edt-minute', 'value'), State('edt-second', 'value')]
+     State('edt-minute', 'value'), State('edt-second', 'value'),
+     State('duration-str', 'value'), State('barSize-Setting', 'value'), State('RTH', 'value')]
 )
 def update_candlestick_graph(n_clicks, currency_string, what_to_show,
-                             edt_date, edt_hour, edt_minute, edt_second):
+                             edt_date, edt_hour, edt_minute, edt_second,duration_str,bar_size_setting,use_rth,):
     # n_clicks doesn't
     # get used, we only include it for the dependency.
 
@@ -178,10 +204,10 @@ def update_candlestick_graph(n_clicks, currency_string, what_to_show,
     cph = fetch_historical_data(
          contract=contract,
          endDateTime='',
-         durationStr='30 D',
-         barSizeSetting='1 hour',
-         whatToShow="MIDPOINT",
-         useRTH=True
+         durationStr=duration_str, ##
+         barSizeSetting=bar_size_setting,##
+         whatToShow=what_to_show,
+         useRTH=use_rth ##
      )
     # # # Make the candlestick figure
     fig = go.Figure(
