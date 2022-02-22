@@ -15,7 +15,7 @@ app.layout = html.Div([
 
     # Section title
     html.H3("Section 1: Fetch & Display exchange rate historical data"),
-    html.H4("Select value for durationStr:"),
+    html.H4("Enter value for durationStr:"),
     html.Div(
         dcc.Input(
             id='duration-str', value='30 D'
@@ -35,8 +35,8 @@ app.layout = html.Div([
     html.Div(
         dcc.Dropdown(
             ["0", "1"],
-            "0",
-            id='RTH'
+            "1",
+            id='use-RTH'
         ),
         style={'width': '365px'}
     ),
@@ -169,10 +169,10 @@ app.layout = html.Div([
     [State('currency-input', 'value'), State('what-to-show', 'value'),
      State('edt-date', 'date'), State('edt-hour', 'value'),
      State('edt-minute', 'value'), State('edt-second', 'value'),
-     State('duration-str', 'value'), State('barSize-Setting', 'value'), State('RTH', 'value')]
+     State('duration-str', 'value'), State('barSize-Setting', 'value'), State('use-RTH', 'value')]
 )
 def update_candlestick_graph(n_clicks, currency_string, what_to_show,
-                             edt_date, edt_hour, edt_minute, edt_second,duration_str,bar_size_setting,use_rth,):
+                             edt_date, edt_hour, edt_minute, edt_second, duration_str, barSize_Setting, use_RTH,):
     # n_clicks doesn't
     # get used, we only include it for the dependency.
 
@@ -204,10 +204,10 @@ def update_candlestick_graph(n_clicks, currency_string, what_to_show,
     cph = fetch_historical_data(
          contract=contract,
          endDateTime='',
-         durationStr=duration_str, ##
-         barSizeSetting=bar_size_setting,##
+         durationStr=duration_str,
+         barSizeSetting=barSize_Setting,
          whatToShow=what_to_show,
-         useRTH=use_rth ##
+         useRTH=use_RTH
      )
     # # # Make the candlestick figure
     fig = go.Figure(
