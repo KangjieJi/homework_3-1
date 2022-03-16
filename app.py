@@ -7,7 +7,7 @@ from ibapi.contract import Contract
 from fintech_ibkr import *
 import pandas as pd
 
-# Make a Dash app!
+
 
 app = dash.Dash(__name__)
 server = app.server
