@@ -133,7 +133,7 @@ app.layout = html.Div([
     html.Div(
         dcc.Loading(
             id="loading-1",
-            type="default",
+            type="circle",
             children=dcc.Graph(id='candlestick-graph')
         )
     ),
@@ -184,13 +184,10 @@ def update_candlestick_graph(n_clicks, currency_string, what_to_show,
     # get used, we only include it for the dependency.
 
     if any([i is None for i in [edt_date, edt_hour, edt_minute, edt_second]]):
-        end_Date_Time = ''
+        endDateTime = ''
     else:
-        #print(edt_date, edt_hour, edt_minute, edt_second)
-        edt_date = edt_date.split('-')
-        end_Date_Time = edt_date[0] + edt_date[1] + edt_date[2] + " " \
-                     + str(edt_hour) + ":" + str(edt_minute) + ":" \
-                     + str(edt_second) + " EST"
+        print(edt_date, edt_hour, edt_minute, edt_second)
+
 
     # First things first -- what currency pair history do you want to fetch?
     # Define it as a contract object!
@@ -204,11 +201,10 @@ def update_candlestick_graph(n_clicks, currency_string, what_to_show,
 
     contract_detail = fetch_contract_details(contract)
     if type(contract_detail) == str:
-        return ("Error: wrong currency pairs (" + currency_string + "), please check your input"), go.Figure()
+        return ("Error, you entered wrong input of currency pairs " + currency_string), go.Figure()
     else:
-        s = str(contract_detail).split(",")[10]
-        if s != currency_string:
-            return ("The system currency pairs " + s +" does not match your input " + currency_string), go.Figure()
+        if str(contract_detail).split(",")[10] != currency_string:
+            return ("The system output is not the same with your input " + currency_string), go.Figure()
 
     ############################################################################
     ############################################################################
@@ -224,7 +220,7 @@ def update_candlestick_graph(n_clicks, currency_string, what_to_show,
     # function to include your new vars!
     cph = fetch_historical_data(
          contract=contract,
-         endDateTime=end_Date_Time,
+         endDateTime="",
          durationStr=duration_str,
          barSizeSetting=barSize_Setting,
          whatToShow=what_to_show,
