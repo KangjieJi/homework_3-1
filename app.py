@@ -5,6 +5,7 @@ from dash import html
 from dash.dependencies import Input, Output, State
 from ibapi.contract import Contract
 from fintech_ibkr import *
+
 import pandas as pd
 
 # Make a Dash app!
@@ -129,7 +130,13 @@ app.layout = html.Div([
     # Div to hold the initial instructions and the updated info once submit is pressed
     html.Div(id='currency-output', children='Enter a currency code and press submit'),
     # Div to hold the candlestick graph
-    html.Div([dcc.Graph(id='candlestick-graph')]),
+    html.Div(
+        dcc.Loading(
+            id="loading-1",
+            type="default",
+            children=dcc.Graph(id='candlestick-graph')
+        )
+    ),
     # Another line break
     html.Br(),
     # Section title
@@ -177,17 +184,31 @@ def update_candlestick_graph(n_clicks, currency_string, what_to_show,
     # get used, we only include it for the dependency.
 
     if any([i is None for i in [edt_date, edt_hour, edt_minute, edt_second]]):
-        endDateTime = ''
+        end_Date_Time = ''
     else:
-        print(edt_date, edt_hour, edt_minute, edt_second)
+        #print(edt_date, edt_hour, edt_minute, edt_second)
+        edt_date = edt_date.split('-')
+        end_Date_Time = edt_date[0] + edt_date[1] + edt_date[2] + " " \
+                     + str(edt_hour) + ":" + str(edt_minute) + ":" \
+                     + str(edt_second) + " EST"
 
     # First things first -- what currency pair history do you want to fetch?
     # Define it as a contract object!
     contract = Contract()
+    if currency_string.count(".") != 1:
+        return ("Error: wrong currency pairs format (" + currency_string + "), please check your input"), go.Figure()
     contract.symbol   = currency_string.split(".")[0]
     contract.secType  = 'CASH'
     contract.exchange = 'IDEALPRO' # 'IDEALPRO' is the currency exchange.
     contract.currency = currency_string.split(".")[1]
+
+    contract_detail = fetch_contract_details(contract)
+    if type(contract_detail) == str:
+        return ("Error: wrong currency pairs (" + currency_string + "), please check your input"), go.Figure()
+    else:
+        s = str(contract_detail).split(",")[10]
+        if s != currency_string:
+            return ("The system currency pairs " + s +" does not match your input " + currency_string), go.Figure()
 
     ############################################################################
     ############################################################################
@@ -203,7 +224,7 @@ def update_candlestick_graph(n_clicks, currency_string, what_to_show,
     # function to include your new vars!
     cph = fetch_historical_data(
          contract=contract,
-         endDateTime='',
+         endDateTime=end_Date_Time,
          durationStr=duration_str,
          barSizeSetting=barSize_Setting,
          whatToShow=what_to_show,
@@ -223,31 +244,6 @@ def update_candlestick_graph(n_clicks, currency_string, what_to_show,
      )
     # # # Give the candlestick figure a title
     fig.update_layout(title=('Exchange Rate: ' + currency_string))
-    ############################################################################
-    ############################################################################
-
-    ############################################################################
-    ############################################################################
-    # This block returns a candlestick plot of apple stock prices. You'll need
-    # to delete or comment out this block and use your currency prices instead.
-
-  #  df = pd.read_csv(
- #       'https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv'
- #   )
- #   fig = go.Figure(
- #       data=[
- #           go.Candlestick(
- #               x=df['Date'],
- #               open=df['AAPL.Open'],
- #               high=df['AAPL.High'],
- #               low=df['AAPL.Low'],
- #               close=df['AAPL.Close']
- #           )
-  #      ]
- #   )
-
-   # currency_string = 'default Apple price data fetch'
-    ############################################################################
     ############################################################################
 
     # Return your updated text to currency-output, and the figure to candlestick-graph outputs
