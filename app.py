@@ -322,9 +322,7 @@ app.layout = html.Div([
     dcc.Input(id='lmtPrice', value='100', type='number'),
     # Submit button for the trade
     html.Button('Trade', id='trade-button', n_clicks=0),
-
     dash_table.DataTable(df.to_dict('records'), [{"name": i, "id": i} for i in df.columns], id='table')
-
 ])
 
 @app.callback(
@@ -515,7 +513,7 @@ def trade(n_clicks, SecType, Contract_Symbol, currency, exchange, primaryExchang
     # find order account
     order_account = order.account
     # find order detail
-    order_ID = m['orderId'][0]
+    order_ID = m['order_id'][0]
 
     perm = m['perm_id'][0]
     c = clientid
