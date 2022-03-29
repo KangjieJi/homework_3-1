@@ -505,7 +505,7 @@ def trade(n_clicks, SecType, Contract_Symbol, currency, exchange, primaryExchang
 
     m = place_order(contract, order)
 
-    df_file = pd.read_csv('C:\\submitted_orders.csv')
+    df_file = pd.read_csv('C:\\Users\\kj197\\Desktop\\submitted_orders.csv')
 
     # find order account
     order_account = order.account
@@ -526,7 +526,7 @@ def trade(n_clicks, SecType, Contract_Symbol, currency, exchange, primaryExchang
                               'con_id':con_id,'symbol':smbol,'action':action_buy_sell,
                               'size':size,'order_type':order_type,'lmt_price':lmt_price}, ignore_index=True)
 
-    df_file.to_csv("C:\\submitted_orders.csv", index=False)
+    df_file.to_csv("C:\\Users\\kj197\\Desktop\\submitted_orders.csv", index=False)
     # Return the message, which goes to the trade-output div's children
     return msg
 
